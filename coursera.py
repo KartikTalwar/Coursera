@@ -39,13 +39,14 @@ class Coursera:
         return True
 
 
-    def getContent(self, pageurl=None):
-        if pageurl is None:
-            pageurl = "https://class.coursera.org/" + self.course + "/lecture/index"
+    def getContent(self, course=None):
+        if course is None:
+            course = self.course
 
-        data = self.browser.open(pageurl).read()
-        html = BeautifulSoup.BeautifulSoup(data)
-        resp = []
+        pageurl = "https://class.coursera.org/" + course + "/lecture/index"
+        data    = self.browser.open(pageurl).read()
+        html    = BeautifulSoup.BeautifulSoup(data)
+        resp    = []
 
         for week in html.findAll('h3', {'class':'list_header'}):
             topic = week.string
