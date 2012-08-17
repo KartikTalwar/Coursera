@@ -57,7 +57,6 @@ class Coursera:
                
                 for links in lectures.findAll('a'):
                     url = links['href']
-
                     if 'view?' not in url:
                         lecurls.append(url)
 
