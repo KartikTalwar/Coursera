@@ -20,8 +20,8 @@ class Coursera:
         if course is None:
             course = self.course
 
-        loginurl  = "https://www.coursera.org/" + course + "/auth/auth_redirector?"
-        loginurl += "type=login&subtype=normal&email="
+        loginurl  = "https://www.coursera.org/" + course + "/auth/auth_redirector?" + \
+                    "type=login&subtype=normal&email="
         homeurl   = "https://class.coursera.org/" + course + "/class/index"
 
         self.browser.open(loginurl)
@@ -56,12 +56,13 @@ class Coursera:
                 lecurls = []
                
                 for links in lectures.findAll('a'):
-                    lecurls.append(links['href'])
+                    url = links['href']
+                    if 'view?' not in url:
+                        lecurls.append(url)
 
                 temp[lecture] = lecurls
 
             resp[topic] = temp
-
 
         return resp
 
@@ -71,10 +72,10 @@ class Coursera:
         return re.sub('(\n|\r|\t)', '', data)
 
 
-from pprint import pprint as pp
 
-USERNAME = ''
-PASSWORD = ''
+
+from pprint import pprint as pp
+from config import USERNAME, PASSWORD
 
 options = {"user": USERNAME, "pass": PASSWORD, "course": "nlp"}
 course = Coursera(options)
