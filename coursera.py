@@ -72,7 +72,7 @@ class Coursera:
         if content is None:
             content = self.getContent()
 
-        topicLength = int(math.floor(math.log10(len(content))+1)) # get digits
+        topicLength = math.floor(math.log10(len(content))+1) # get digits
         newContent  = []
 
         for i, topic in enumerate(content):
