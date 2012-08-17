@@ -3,7 +3,6 @@ import sys
 import os
 import mechanize
 import BeautifulSoup
-import math
 
 
 class Coursera:
@@ -48,12 +47,12 @@ class Coursera:
         html    = BeautifulSoup.BeautifulSoup(data)
         resp    = []
 
-        for week in html.findAll('h3', {'class':'list_header'}):
-            topic = week.string
+        for i, week in enumerate(html.findAll('h3', {'class':'list_header'})):
+            topic = "%02d %s" % (i+1, week.string)
             temp  = []
 
-            for lectures in week.parent.nextSibling.findAll('li'):
-                lecture = self._strip(lectures.a.contents[0])
+            for j, lectures in enumerate(week.parent.nextSibling.findAll('li')):
+                lecture = "%02d %s" % (j+1, self._strip(lectures.a.contents[0]))
                 lecurls = []
                
                 for links in lectures.findAll('a'):
@@ -68,26 +67,6 @@ class Coursera:
         return resp
 
 
-    def nameContent(self, content=None):
-        if content is None:
-            content = self.getContent()
-
-        newContent  = []
-
-        for i, topic in enumerate(content):
-            topicName  = "%02d %s" % (i+1, topic[0])
-            newLecture = []
-
-            for j, lecture in enumerate(topic[1]):
-                lectureName = "%02d %s" % (j+1, lecture[0])
-                lectureURL  = lecture[1] # list
-                newLecture.append((lectureName, lectureURL))
-
-            newContent.append((topicName, newLecture))
-
-        return newContent
-
-
     def _strip(self, data):
         return re.sub('(\n|\r|\t)', '', data)
 
@@ -100,6 +79,6 @@ from config import USERNAME, PASSWORD
 options = {"user": USERNAME, "pass": PASSWORD, "course": "nlp"}
 course = Coursera(options)
 course.login()
-pp(course.nameContent())
+pp(course.getContent())
 
 
