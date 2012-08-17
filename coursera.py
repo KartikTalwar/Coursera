@@ -12,7 +12,9 @@ class Coursera:
         self.password = options["pass"]
         self.course   = options["course"]
 
-        self.browser  = mechanize.Browser()
+        self.browser            = mechanize.Browser()
+        self.browser.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) \
+                                    Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
         self.browser.set_handle_robots(False)
 
 
@@ -57,7 +59,7 @@ class Coursera:
                 lecurls = []
                
                 for links in lectures.findAll('a'):
-                    url = links['href']
+                    url = links['href'].replace('%2F', '/')
                     if 'view?' not in url:
                         lecurls.append(url)
 
@@ -66,6 +68,27 @@ class Coursera:
             resp.append((topic,  temp))
 
         return resp
+
+
+    def downloadTree(self, course=None):
+        if course is None:
+            course = self.course
+
+        content = self.getContent(course)
+
+        for topic in content:
+            topicName = topic[0]
+            print "\n", topicName
+
+            for lecture in topic[1]:
+                lectureName = lecture[0]
+                print "  ", lectureName
+
+                for link in lecture[1]:
+                    print "    ", self._renameFile(link, lectureName)
+
+
+        return "\n"
 
 
     def downloadFile(self, url, fileName):
@@ -87,15 +110,30 @@ class Coursera:
                 print "Error: %s" % e
 
 
-    def _renameFile(self, fname, isFile=True):
-        name = re.sub("\([^\(]*$", "", fname)
-        name = name.strip().replace(':','-')
-        name = re.sub("[^A-Za-z0-9\.\(\)\-\_\s]", "", name)    
+    def _renameFile(self, url, name):
+        allowed = ['ppt', 'pptx', 'doc',  'docx', 'pdf',
+                   'srt', 'txt',  'mp3',  'zip',  'mp4',
+                   'exe', 'xls',  'xlsx', 'flv',  'wmv']
 
-        if isFile:
-            name = re.sub("_+", "_", name.replace(' ', '_'))
+        fname = None
+        name  = re.sub("\([^\(]*$", "", name)
+        name  = name.strip().replace(':','-')
+        name  = re.sub("[^A-Za-z0-9\.\(\)\-\_\s]", "", name)
+        name  = re.sub("_+", "_", name.replace(' ', '_'))
 
-        return name
+        # file extension
+        if url.split('.')[-1] in allowed:
+            fname = url.split('/')[-1]
+
+        if url.split('format=')[-1] in allowed:
+            fname = name + '.' + url.split('format=')[-1]
+
+        if fname is None:
+            ext = re.search("(\w+)(?:\?.*)?$", url).group(1)
+            if ext in allowed:
+                fname = name + '.' + ext
+
+        return fname.replace('-', '_')
 
 
     def _progressBar(self, blocknum, bs, size):
@@ -136,6 +174,6 @@ from config import USERNAME, PASSWORD
 options = {"user": USERNAME, "pass": PASSWORD, "course": "nlp"}
 course = Coursera(options)
 course.login()
-#pp(course.getContent())
-course.downloadFile( 'https://class.coursera.org/nlp/lecture/download.mp4?lecture_id=6', course._renameFile('01 Defining Minimum Edit Distance.mp4', True))
+pp(course.downloadTree())
+#course.downloadFile( 'https://class.coursera.org/nlp/lecture/download.mp4?lecture_id=6', course._renameFile('01 Defining Minimum Edit Distance.mp4', True))
 
