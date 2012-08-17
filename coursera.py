@@ -3,7 +3,7 @@ import sys
 import os
 import mechanize
 import BeautifulSoup
-
+import math
 
 
 class Coursera:
@@ -68,6 +68,26 @@ class Coursera:
         return resp
 
 
+    def nameContent(self, content=None):
+        if content is None:
+            content = self.getContent()
+
+        topicLength = int(math.floor(math.log10(len(content))+1)) # get digits
+        newContent  = []
+
+        for i, topic in enumerate(content):
+            topicName  = ("%0" + str(topicLength) + "d %s") % (i+1, topic[0])
+            newLecture = []
+
+            for j, lecture in enumerate(topic[1]):
+                lectureName = "%02d %s" % (j+1, lecture[0])
+                lectureURL  = lecture[1] # list
+                newLecture.append((lectureName, lectureURL))
+
+            newContent.append((topicName, newLecture))
+
+        return newContent
+
 
     def _strip(self, data):
         return re.sub('(\n|\r|\t)', '', data)
@@ -81,6 +101,6 @@ from config import USERNAME, PASSWORD
 options = {"user": USERNAME, "pass": PASSWORD, "course": "nlp"}
 course = Coursera(options)
 course.login()
-pp(course.getContent())
+pp(course.nameContent())
 
 
