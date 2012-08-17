@@ -45,11 +45,11 @@ class Coursera:
 
         data = self.browser.open(pageurl).read()
         html = BeautifulSoup.BeautifulSoup(data)
-        resp = {}
+        resp = []
 
         for week in html.findAll('h3', {'class':'list_header'}):
             topic = week.string
-            temp  = {}
+            temp  = []
 
             for lectures in week.parent.nextSibling.findAll('li'):
                 lecture = self._strip(lectures.a.contents[0])
@@ -57,12 +57,13 @@ class Coursera:
                
                 for links in lectures.findAll('a'):
                     url = links['href']
+
                     if 'view?' not in url:
                         lecurls.append(url)
 
-                temp[lecture] = lecurls
+                temp.append((lecture,  lecurls))
 
-            resp[topic] = temp
+            resp.append((topic,  temp))
 
         return resp
 
