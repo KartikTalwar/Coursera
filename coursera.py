@@ -13,6 +13,7 @@ class Coursera:
         self.course   = options["course"]
 
         self.browser  = mechanize.Browser()
+        self.browser.set_handle_robots(False)
 
 
     def login(self, course=None):
@@ -67,10 +68,31 @@ class Coursera:
         return resp
 
 
+    def downloadFile(self, url, fileName):
+        if os.path.exists(fileName):
+            print "Skipping file '%s'" % fileName
+        else:
+            print "Downloading: '%s'" % fileName
+            print "URL: %s" % url
+            try:
+                self.browser.retrieve(url, fileName)
+                return True
+            except KeyboardInterrupt:
+                if os.path.exists(fileName):
+                    os.remove(fileName)
+                raise
+            except Exception, e:
+                if os.path.exists(fileName):
+                    os.remove(fileName)
+                print "Error: %s" % e
+
+        return False
+
+
     def _renameFile(self, fname, isFile=True):
         name = re.sub("\([^\(]*$", "", fname)
         name = name.strip().replace(':','-')
-        name = re.sub("[^A-Za-z0-9\.\(\)\-\_\s]", "", name)
+        name = re.sub("[^A-Za-z0-9\.\(\)\-\_\s]", "", name)    
 
         if isFile:
             name = re.sub("_+", "_", name.replace(' ', '_'))
@@ -90,6 +112,6 @@ from config import USERNAME, PASSWORD
 options = {"user": USERNAME, "pass": PASSWORD, "course": "nlp"}
 course = Coursera(options)
 course.login()
-pp(course.getContent())
-
+#pp(course.getContent())
+pp(course.downloadFile( 'https://class.coursera.org/nlp/lecture/download.mp4?lecture_id=6', course._renameFile('01 Defining Minimum Edit Distance.mp4', True)))
 
