@@ -70,7 +70,7 @@ class Coursera:
     def _renameFile(self, fname, isFile=True):
         name = re.sub("\([^\(]*$", "", fname)
         name = name.strip().replace(':','-')
-        name = re.sub("[^A-Za-z0-9.\(\)\-\_\s]", "", name)
+        name = re.sub("[^A-Za-z0-9\.\(\)\-\_\s]", "", name)
 
         if isFile:
             name = re.sub("_+", "_", name.replace(' ', '_'))
