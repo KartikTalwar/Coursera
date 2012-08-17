@@ -74,9 +74,9 @@ class Coursera:
         else:
             print "Downloading: '%s'" % fileName
             print "URL: %s" % url
+
             try:
-                self.browser.retrieve(url, fileName)
-                return True
+                self.browser.retrieve(url, fileName, self._progressBar)
             except KeyboardInterrupt:
                 if os.path.exists(fileName):
                     os.remove(fileName)
@@ -85,8 +85,6 @@ class Coursera:
                 if os.path.exists(fileName):
                     os.remove(fileName)
                 print "Error: %s" % e
-
-        return False
 
 
     def _renameFile(self, fname, isFile=True):
@@ -98,6 +96,32 @@ class Coursera:
             name = re.sub("_+", "_", name.replace(' ', '_'))
 
         return name
+
+
+    def _progressBar(self, blocknum, bs, size):
+        if size > 0:
+            if size % bs != 0:
+                blockCount = size/bs + 1
+            else:
+                blockCount = size/bs
+
+            fraction = float(blocknum)/blockCount
+            width    = 50
+
+            stars    = '*' * int(width * fraction)
+            spaces   = ' ' * (width - len(stars))
+            progress = '[%s%s] (%s%%)' % (stars, spaces, int(fraction * 100))
+
+            if fraction*100 <= 99:
+                sys.stdout.write(info)
+
+                if blocknum < block_count:
+                    sys.stdout.write('\r')
+                else:
+                    sys.stdout.write('\n')
+            else:
+                sys.stdout.write('  ' * width + '\r')
+                sys.stdout.flush()
 
 
     def _strip(self, data):
@@ -113,5 +137,5 @@ options = {"user": USERNAME, "pass": PASSWORD, "course": "nlp"}
 course = Coursera(options)
 course.login()
 #pp(course.getContent())
-pp(course.downloadFile( 'https://class.coursera.org/nlp/lecture/download.mp4?lecture_id=6', course._renameFile('01 Defining Minimum Edit Distance.mp4', True)))
+course.downloadFile( 'https://class.coursera.org/nlp/lecture/download.mp4?lecture_id=6', course._renameFile('01 Defining Minimum Edit Distance.mp4', True))
 
