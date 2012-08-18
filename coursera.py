@@ -1,6 +1,7 @@
 import re
 import sys
 import os
+import getpass
 import mechanize
 import BeautifulSoup
 
@@ -189,12 +190,17 @@ class Coursera:
 
 
 
+if __name__ == '__main__':
 
-from pprint import pprint as pp
-from config import USERNAME, PASSWORD
+    username = raw_input('Username: ')
+    password = getpass.getpass()
+    course   = raw_input('Course: ')
 
-options = {"user": USERNAME, "pass": PASSWORD, "course": "nlp"}
-course = Coursera(options)
-course.login()
-course.downloadTree()
+    options = {"user"     : username,
+               "pass"     : password,
+               "course"   : course}
+
+    course = Coursera(options)
+    course.login()
+    course.downloadTree()
 
