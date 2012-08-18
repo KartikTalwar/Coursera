@@ -113,7 +113,6 @@ class Coursera:
             print " " * 10 + " - %s (Already Saved)" % fileName.split('/')[-1]
         else:
             print " " * 10 + " - %s" % fileName.split('/')[-1]
-            #print "    -  URL: %s" % url
 
             try:
                 self.browser.retrieve(url, fileName, self._progressBar)
@@ -156,7 +155,6 @@ class Coursera:
     def _renameFolder(self, name):
         name = re.sub("[^A-Za-z0-9\.\(\)\_\s\-\:]", "", name)
         name = re.sub(" +", " ", name)
-
         return name
 
 
@@ -167,7 +165,7 @@ class Coursera:
             else:
                 blockCount = size/bs
 
-            fraction = float(blocknum)/blockCount
+            fraction = blocknum*1.0/blockCount
             width    = 50
 
             stars    = '*' * int(width * fraction)
@@ -182,7 +180,7 @@ class Coursera:
                 else:
                     sys.stdout.write('\n')
             else:
-                sys.stdout.write('      ' + '  ' * width + '\r')
+                sys.stdout.write(' ' * 6 + '  ' * width + '\r')
                 sys.stdout.flush()
 
 
@@ -199,5 +197,4 @@ options = {"user": USERNAME, "pass": PASSWORD, "course": "nlp"}
 course = Coursera(options)
 course.login()
 course.downloadTree()
-#course.downloadFile( 'https://class.coursera.org/nlp/lecture/download.mp4?lecture_id=6', course._renameFile('01 Defining Minimum Edit Distance.mp4', True))
 
