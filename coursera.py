@@ -50,6 +50,8 @@ class Coursera:
         if course is None:
             course = self.course
 
+        self.login(course)
+
         pageurl = "https://class.coursera.org/" + course + "/lecture/index"
         data    = self.browser.open(pageurl).read()
         html    = BeautifulSoup.BeautifulSoup(data)
