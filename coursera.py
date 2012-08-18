@@ -8,9 +8,10 @@ import BeautifulSoup
 class Coursera:
 
     def __init__(self, options):
-        self.username = options["user"]
-        self.password = options["pass"]
-        self.course   = options["course"]
+        self.username   = options["user"]
+        self.password   = options["pass"]
+        self.course     = options["course"]
+        self.courseName = self.course
 
         self.browser            = mechanize.Browser()
         self.browser.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) \
@@ -50,6 +51,11 @@ class Coursera:
         html    = BeautifulSoup.BeautifulSoup(data)
         resp    = []
 
+        fullLectureName =  html.find('h1', {'class' : 'hidden'}).string
+
+        if len(fullLectureName.split()) > 1 and fullLectureName.istitle():
+            self.courseName = self._renameFolder(fullLectureName)
+
         for i, week in enumerate(html.findAll('h3', {'class':'list_header'})):
             topic = "%02d - %s" % (i+1, week.string)
             temp  = []
@@ -75,12 +81,13 @@ class Coursera:
             course = self.course
 
         content = self.getContent(course)
+        print "\n" + self.courseName
 
         for topic in content:
             topicName = self._renameFolder(topic[0])
-            pathName  = 'nlp' + '/' + topicName + '/'
+            pathName  = self.courseName + '/' + topicName + '/'
 
-            print "\n" + ' >> ' + topicName 
+            print "\n" + '   >> ' + topicName 
 
             for lecture in topic[1]:
                 lectureName = self._renameFolder(lecture[0])
@@ -93,7 +100,7 @@ class Coursera:
                         raise e
                     pass
                     
-                print " " * 6 + lectureName
+                print " " * 8 + lectureName
 
                 for link in lecture[1]:
                     fileName = self._renameFile(link, lectureName)
@@ -103,9 +110,9 @@ class Coursera:
 
     def downloadFile(self, url, fileName):
         if os.path.exists(fileName):
-            print " " * 8 + " - %s (Already Saved)" % fileName.split('/')[-1]
+            print " " * 10 + " - %s (Already Saved)" % fileName.split('/')[-1]
         else:
-            print " " * 8 + "- %s" % fileName.split('/')[-1]
+            print " " * 10 + " - %s" % fileName.split('/')[-1]
             #print "    -  URL: %s" % url
 
             try:
@@ -117,7 +124,7 @@ class Coursera:
             except Exception, e:
                 if os.path.exists(fileName):
                     os.remove(fileName)
-                print "       Error: %s" % e
+                print " " * 10 + " Error: %s" % e
 
 
     def _renameFile(self, url, name):
@@ -165,7 +172,7 @@ class Coursera:
 
             stars    = '*' * int(width * fraction)
             spaces   = ' ' * (width - len(stars))
-            progress = '    [%s%s] (%s%%)' % (stars, spaces, int(fraction * 100))
+            progress = ' ' * 12 + ' [%s%s] (%s%%)' % (stars, spaces, int(fraction * 100))
 
             if fraction*100 <= 99:
                 sys.stdout.write(progress)
@@ -175,7 +182,7 @@ class Coursera:
                 else:
                     sys.stdout.write('\n')
             else:
-                sys.stdout.write('    ' + '  ' * width + '\r')
+                sys.stdout.write('      ' + '  ' * width + '\r')
                 sys.stdout.flush()
 
 
