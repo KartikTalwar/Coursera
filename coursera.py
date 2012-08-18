@@ -24,15 +24,18 @@ class Coursera:
         if course is None:
             course = self.course
 
-        loginurl  = "https://www.coursera.org/" + course + "/auth/auth_redirector?" + \
+        loginurl  = "https://class.coursera.org/" + course + "/auth/auth_redirector?" + \
                     "type=login&subtype=normal&email="
         homeurl   = "https://class.coursera.org/" + course + "/class/index"
 
-        self.browser.open(loginurl)
-        self.browser.select_form(nr=0)
-        self.browser.form["email"]    = self.username
-        self.browser.form["password"] = self.password
-        self.browser.submit()
+        try:
+            self.browser.open(loginurl)
+            self.browser.select_form(nr=0)
+            self.browser.form["email"]    = self.username
+            self.browser.form["password"] = self.password
+            self.browser.submit()
+        except Exception, e:
+            pass
 
         main   = self.browser.open(homeurl).read()
         search = re.findall('dropdown_my', main)
@@ -52,10 +55,12 @@ class Coursera:
         html    = BeautifulSoup.BeautifulSoup(data)
         resp    = []
 
-        fullLectureName =  html.find('h1', {'class' : 'hidden'}).string
+        fullLectureName  = html.find('h1', {'class' : 'hidden'}).string
+        fullLectureSplit = fullLectureName.split() 
 
-        if len(fullLectureName.split()) > 1 and fullLectureName.istitle():
-            self.courseName = self._renameFolder(fullLectureName)
+        if len(fullLectureSplit) > 1:
+            if fullLectureSplit[0][0].isupper() and fullLectureSplit[0][1].islower():
+                self.courseName = self._renameFolder(fullLectureName)
 
         for i, week in enumerate(html.findAll('h3', {'class':'list_header'})):
             topic = "%02d - %s" % (i+1, week.string)
@@ -107,6 +112,8 @@ class Coursera:
                     fileName = self._renameFile(link, lectureName)
                     filePath = dlPathName + fileName
                     self.downloadFile(link, filePath)
+
+        print "\n"
 
 
     def downloadFile(self, url, fileName):
@@ -192,6 +199,8 @@ class Coursera:
 
 if __name__ == '__main__':
 
+    from pprint import pprint as pp
+
     username = raw_input('Username: ')
     password = getpass.getpass()
     course   = raw_input('Course: ')
@@ -202,5 +211,6 @@ if __name__ == '__main__':
 
     course = Coursera(options)
     course.login()
+    course.getContent()
     course.downloadTree()
 
