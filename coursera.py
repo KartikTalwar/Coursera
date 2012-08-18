@@ -80,7 +80,7 @@ class Coursera:
             topicName = self._renameFolder(topic[0])
             pathName  = 'nlp' + '/' + topicName + '/'
 
-            print "\n", topicName
+            print "\n" + topicName 
 
             for lecture in topic[1]:
                 lectureName = self._renameFolder(lecture[0])
@@ -93,24 +93,23 @@ class Coursera:
                         raise e
                     pass
                     
-                print "  ", lectureName
+                print "\r  " + lectureName
 
                 for link in lecture[1]:
                     fileName = self._renameFile(link, lectureName)
                     filePath = dlPathName + fileName
-                    print '    ', filePath
+                    self.downloadFile(link, filePath)
 
-                print "\r"
+                print "\n"
 
-        return ""
 
 
     def downloadFile(self, url, fileName):
         if os.path.exists(fileName):
-            print "Skipping file '%s'" % fileName
+            print "    %s (Already downloaded)" % fileName.split('/')[-1]
         else:
-            print "Downloading: '%s'" % fileName
-            print "URL: %s" % url
+            print "    %s" % fileName.split('/')[-1]
+            #print "    URL: %s" % url
 
             try:
                 self.browser.retrieve(url, fileName, self._progressBar)
@@ -121,7 +120,7 @@ class Coursera:
             except Exception, e:
                 if os.path.exists(fileName):
                     os.remove(fileName)
-                print "Error: %s" % e
+                print "    Error: %s" % e
 
 
     def _renameFile(self, url, name):
@@ -132,7 +131,7 @@ class Coursera:
         fname = None
         name  = re.sub("\([^\(]*$", "", name)
         name  = name.strip().replace(':','-')
-        name  = re.sub("[^A-Za-z0-9\.\(\)\_\s]", "", name)
+        name  = re.sub("[^A-Za-z0-9\.\(\)\_\s\:]", "", name)
         name  = re.sub("_+", "_", name.replace(' ', '_'))
 
         # file extension
@@ -151,7 +150,7 @@ class Coursera:
 
 
     def _renameFolder(self, name):
-        name = re.sub("[^A-Za-z0-9\.\(\)\_\s\-]", "", name)
+        name = re.sub("[^A-Za-z0-9\.\(\)\_\s\-\:]", "", name)
         name = re.sub(" +", " ", name)
 
         return name
@@ -169,17 +168,17 @@ class Coursera:
 
             stars    = '*' * int(width * fraction)
             spaces   = ' ' * (width - len(stars))
-            progress = '[%s%s] (%s%%)' % (stars, spaces, int(fraction * 100))
+            progress = '    [%s%s] (%s%%)' % (stars, spaces, int(fraction * 100))
 
             if fraction*100 <= 99:
-                sys.stdout.write(info)
+                sys.stdout.write(progress)
 
-                if blocknum < block_count:
+                if blocknum < blockCount:
                     sys.stdout.write('\r')
                 else:
                     sys.stdout.write('\n')
             else:
-                sys.stdout.write('  ' * width + '\r')
+                sys.stdout.write('    ' + '  ' * width + '\r')
                 sys.stdout.flush()
 
 
@@ -195,6 +194,6 @@ from config import USERNAME, PASSWORD
 options = {"user": USERNAME, "pass": PASSWORD, "course": "nlp"}
 course = Coursera(options)
 course.login()
-pp(course.downloadTree())
+course.downloadTree()
 #course.downloadFile( 'https://class.coursera.org/nlp/lecture/download.mp4?lecture_id=6', course._renameFile('01 Defining Minimum Edit Distance.mp4', True))
 
