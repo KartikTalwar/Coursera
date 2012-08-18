@@ -161,7 +161,7 @@ class Coursera:
 
 
     def _renameFolder(self, name):
-        name = re.sub("[^A-Za-z0-9\.\(\)\_\s\-\:]", "", name)
+        name = re.sub("[^A-Za-z0-9\.\(\)\_\s\-]", "", name.replace(':', '-'))
         name = re.sub(" +", " ", name)
         return name
 
