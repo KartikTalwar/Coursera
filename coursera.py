@@ -188,7 +188,7 @@ class Coursera:
                 else:
                     sys.stdout.write('\n')
             else:
-                sys.stdout.write(' ' * 6 + '  ' * width + '\r')
+                sys.stdout.write(' ' * int(width * 1.5) + '\r')
                 sys.stdout.flush()
 
 
@@ -198,8 +198,6 @@ class Coursera:
 
 
 if __name__ == '__main__':
-
-    from pprint import pprint as pp
 
     username = raw_input('Username: ')
     password = getpass.getpass()
