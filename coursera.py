@@ -51,7 +51,7 @@ class Coursera:
         resp    = []
 
         for i, week in enumerate(html.findAll('h3', {'class':'list_header'})):
-            topic = "%02d %s" % (i+1, week.string)
+            topic = "%02d - %s" % (i+1, week.string)
             temp  = []
 
             for j, lectures in enumerate(week.parent.nextSibling.findAll('li')):
@@ -77,18 +77,32 @@ class Coursera:
         content = self.getContent(course)
 
         for topic in content:
-            topicName = topic[0]
+            topicName = self._renameFolder(topic[0])
+            pathName  = 'nlp' + '/' + topicName + '/'
+
             print "\n", topicName
 
             for lecture in topic[1]:
-                lectureName = lecture[0]
+                lectureName = self._renameFolder(lecture[0])
+                dlPathName  = pathName + lectureName + '/'
+
+                try:
+                    os.makedirs(dlPathName)
+                except OSError as e:
+                    if e.errno != 17:
+                        raise e
+                    pass
+                    
                 print "  ", lectureName
 
                 for link in lecture[1]:
-                    print "    ", self._renameFile(link, lectureName)
+                    fileName = self._renameFile(link, lectureName)
+                    filePath = dlPathName + fileName
+                    print '    ', filePath
 
+                print "\r"
 
-        return "\n"
+        return ""
 
 
     def downloadFile(self, url, fileName):
@@ -118,7 +132,7 @@ class Coursera:
         fname = None
         name  = re.sub("\([^\(]*$", "", name)
         name  = name.strip().replace(':','-')
-        name  = re.sub("[^A-Za-z0-9\.\(\)\-\_\s]", "", name)
+        name  = re.sub("[^A-Za-z0-9\.\(\)\_\s]", "", name)
         name  = re.sub("_+", "_", name.replace(' ', '_'))
 
         # file extension
@@ -133,7 +147,14 @@ class Coursera:
             if ext in allowed:
                 fname = name + '.' + ext
 
-        return fname.replace('-', '_')
+        return re.sub('_+', '_', fname)
+
+
+    def _renameFolder(self, name):
+        name = re.sub("[^A-Za-z0-9\.\(\)\_\s\-]", "", name)
+        name = re.sub(" +", " ", name)
+
+        return name
 
 
     def _progressBar(self, blocknum, bs, size):
