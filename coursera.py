@@ -70,7 +70,7 @@ class Coursera:
                
                 for links in lectures.findAll('a'):
                     url = links['href'].replace('%2F', '/')
-                    if 'view?' not in url:
+                    if 'view?' not in url and url.find('http') is 0:
                         lecurls.append(url)
 
                 temp.append((lecture,  lecurls))
