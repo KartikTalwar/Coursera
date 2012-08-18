@@ -182,7 +182,7 @@ class Coursera:
             spaces   = ' ' * (width - len(stars))
             progress = ' ' * 12 + ' [%s%s] (%s%%)' % (stars, spaces, int(fraction * 100))
 
-            if fraction*100 <= 99:
+            if fraction*100 < 100:
                 sys.stdout.write(progress)
 
                 if blocknum < blockCount:
