@@ -57,12 +57,8 @@ class Coursera:
         html    = BeautifulSoup.BeautifulSoup(data)
         resp    = []
 
-        fullLectureName  = html.find('h1', {'class' : 'hidden'}).string
-        fullLectureSplit = fullLectureName.split() 
-
-        if len(fullLectureSplit) > 1:
-            if fullLectureSplit[0][0].isupper() and fullLectureSplit[0][1].islower():
-                self.courseName = self._renameFolder(fullLectureName)
+        lectureName     = html.find('h1', {'class' : 'hidden'}).string
+        self.courseName = self._renameFolder(lectureName)
 
         for i, week in enumerate(html.findAll('h3', {'class':'list_header'})):
             topic = "%02d - %s" % (i+1, week.string)
@@ -133,7 +129,7 @@ class Coursera:
             except Exception, e:
                 if os.path.exists(fileName):
                     os.remove(fileName)
-                print " " * 10 + " Error: %s" % e
+                print " " * 10 + " X %s -  %s" % (fileName.split('/')[-1], e)
 
 
     def _renameFile(self, url, name):
