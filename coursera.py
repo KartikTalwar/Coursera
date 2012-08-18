@@ -80,7 +80,7 @@ class Coursera:
             topicName = self._renameFolder(topic[0])
             pathName  = 'nlp' + '/' + topicName + '/'
 
-            print "\n" + topicName 
+            print "\n" + ' >> ' + topicName 
 
             for lecture in topic[1]:
                 lectureName = self._renameFolder(lecture[0])
@@ -93,23 +93,20 @@ class Coursera:
                         raise e
                     pass
                     
-                print "\r  " + lectureName
+                print " " * 6 + lectureName
 
                 for link in lecture[1]:
                     fileName = self._renameFile(link, lectureName)
                     filePath = dlPathName + fileName
                     self.downloadFile(link, filePath)
 
-                print "\n"
-
-
 
     def downloadFile(self, url, fileName):
         if os.path.exists(fileName):
-            print "    %s (Already downloaded)" % fileName.split('/')[-1]
+            print " " * 8 + " - %s (Already Saved)" % fileName.split('/')[-1]
         else:
-            print "    %s" % fileName.split('/')[-1]
-            #print "    URL: %s" % url
+            print " " * 8 + "- %s" % fileName.split('/')[-1]
+            #print "    -  URL: %s" % url
 
             try:
                 self.browser.retrieve(url, fileName, self._progressBar)
@@ -120,7 +117,7 @@ class Coursera:
             except Exception, e:
                 if os.path.exists(fileName):
                     os.remove(fileName)
-                print "    Error: %s" % e
+                print "       Error: %s" % e
 
 
     def _renameFile(self, url, name):
