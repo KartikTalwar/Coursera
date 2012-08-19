@@ -155,6 +155,8 @@ class Coursera:
             if ext in allowed:
                 fname = name + '.' + ext
 
+        fname = self._strReplace(['%20', '-', '%27'], ['_', '_', ''], fname)
+
         return re.sub('_+', '_', fname)
 
 
@@ -192,6 +194,13 @@ class Coursera:
 
     def _strip(self, data):
         return re.sub('(\n|\r|\t)', '', data)
+
+
+    def _strReplace(self, search, replace, subject):
+        for i in range(len(search)):
+            if search[i] != '':
+                subject = subject.replace(str(search[i]), str(replace[i]))
+        return subject
 
 
 
