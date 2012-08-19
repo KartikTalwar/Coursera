@@ -89,13 +89,13 @@ class Coursera:
 
         for topic in content:
             topicName = self._renameFolder(topic[0])
-            pathName  = self.courseName + '/' + topicName + '/'
+            pathName  = self.courseName.rstrip(' ') + '/' + topicName.rstrip(' ') + '/'
 
             print "\n" + '   >> ' + topicName 
 
             for lecture in topic[1]:
                 lectureName = self._renameFolder(lecture[0])
-                dlPathName  = pathName + lectureName + '/'
+                dlPathName  = pathName + lectureName.rstrip(' ') + '/'
 
                 try:
                     os.makedirs(dlPathName)
