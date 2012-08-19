@@ -127,9 +127,12 @@ class Coursera:
                     os.remove(fileName)
                 raise
             except Exception, e:
+                err = e
                 if os.path.exists(fileName):
                     os.remove(fileName)
-                print " " * 10 + " X %s -  %s" % (fileName.split('/')[-1], e)
+                if e.errno == 2:
+                    err = "Errno 2 (No such file or directory)"
+                print " " * 10 + " X %s - %s" % (fileName.split('/')[-1], err)
 
 
     def _renameFile(self, url, name):
