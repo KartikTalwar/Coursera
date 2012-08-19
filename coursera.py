@@ -100,7 +100,7 @@ class Coursera:
                 try:
                     os.makedirs(dlPathName)
                 except OSError as e:
-                    if e.errno != 17:
+                    if e.errno != 17 and e.errno != 2:
                         raise e
                     pass
                     
